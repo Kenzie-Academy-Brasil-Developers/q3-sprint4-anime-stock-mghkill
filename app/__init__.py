@@ -1,6 +1,7 @@
 from flask import Flask
 
 from app import routes
+from app.models.anime_models import Anime
 
 def create_app():
 
