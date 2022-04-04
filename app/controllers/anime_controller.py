@@ -2,7 +2,7 @@ from curses.ascii import HT
 from http import HTTPStatus
 from flask import request
 from psycopg2.errors import UniqueViolation
-from app.controllers import detect_key_error
+from app.controllers import detect_key_error, detect_key_error_patch
 from app.models.anime_models import Anime
 
 
@@ -59,14 +59,17 @@ def get_by_id_controller(anime_id):
 
 
 
+
+
 def update_by_id_controller(anime_id):
     data = request.get_json()
 
-    try:
-        Anime(**data)
-    except KeyError:
-        return detect_key_error(data)
-    
+    detect_error = detect_key_error_patch(data)
+
+    if detect_error:
+        return detect_error
+
+
     updated_animes = Anime.update_animes(anime_id, data)
 
     if not updated_animes:
@@ -75,6 +78,10 @@ def update_by_id_controller(anime_id):
     serialized_user = Anime.serialize(updated_animes)
 
     return {"data": serialized_user}
+    
+
+
+
 
 
 def delete_by_id_controller(anime_id):
